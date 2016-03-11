@@ -1,0 +1,4 @@
+CXX=gcc
+CXXFLAGS=-g
+LFLAGS=
+OBJS=
