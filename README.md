@@ -1,2 +1,2 @@
 # callmejson
-A JSON-XML converter for OOP class
+A JSON-XML converter as an OOP course project
