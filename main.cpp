@@ -3,7 +3,7 @@
 #include <string>
 #include <fstream>
 
-#DEFINE TEST
+//#define TEST
 
 #define TAB "  "
 
@@ -11,62 +11,82 @@ using namespace std;
 
 int g_indentlevel = 0;
 
-const char g_keychars = {
-    '{', '}', '[', ']', ':', '"'
-}
-
 enum ElementType {
     PROPERTY,
     OBJECT,
     ARRAY
 };
 
-void indent(ofstream file, int howmany) {
+void indent(ofstream& outstream, int howmany) {
     while (howmany >= 0){
-        file << TAB;
-        lvl--;
+        outstream << TAB;
+        howmany--;
     }
 }
 
-ElementType getToNextValue(ifstream stream){
+ElementType getToNextValue(ifstream& stream){
     char tempc;
     stream >> tempc;
+    ElementType ret_val;
     while (tempc != '"' && tempc != '{' && tempc != '[')
         stream >> tempc;
     switch (tempc) {
     case '"':
-        return PROPERTY;
+        ret_val = PROPERTY;
+        break;
     case '{':
-        return OBJECT;
+        ret_val = OBJECT;
+        break;
     case '[':
-        return ARRAY;
+        ret_val = ARRAY;
+        break;
     }
+    return ret_val;
 }
 
-string getNextKey(ifstream stream){
-    char tempc;
+string readWord(ifstream& instream){
     string tempstr = "";
-    stream >> tempc;
-    while (tempc != '"')
-        file >> tempc;
-    stream >> tempc;
+    char tempc;
+    instream >> tempc;
     while (tempc != '"'){
         tempstr += tempc;
-        stream >> tempc;
+        instream >> tempc;
     }
     return tempstr;
 }
 
-string readWord(ifstream stream){
-    string tempstr = "";
+string getNextKey(ifstream& instream){
     char tempc;
-    stream >> tempc;
-    while (tempc != '"'){
-        tempstr += tempc;
-        stream >> tempc;
+    string tempstr = "";
+    instream >> tempc;
+    while (tempc != '"' && !instream.eof() && tempc != '}' && tempc != ']')
+        instream >> tempc;
+    if (tempc == '}' || tempc == ']'){
+        tempstr = "" + tempc;
+        return tempstr;
     }
-    return tempstr;
+    if (instream.eof())
+        return tempstr;
+    return readWord(instream);
 }
+/*
+Object readObject(ifstream& instream) {
+    string tempkey = getNextKey(instream);
+    string tempval = "";
+    ElementType type;
+    Object* returnobj = new Object;
+    while (tempkey != "}"){
+        type = getToNextValue(instream);
+        if (type == PROPERTY){
+            tempval = readWord(instream);
+            returnobj.setKey(tempkey);
+            Property prop;
+            prop
+            returnobj.getElements().push_back()
+        }
+        tempkey = getNextKey();
+    }
+}*/
 
 class Element{
 protected:
@@ -75,17 +95,17 @@ public:
     Element();
     string getKey();
     void setKey(string);
-    virtual void printToStream(ofstream);
+    virtual void printToStream(ofstream&) {}
 };
 
-Element::Element()
-m_name("") {
-    #IFDEF TEST
+Element::Element():
+m_key("") {
+    #ifdef TEST
     cout << "Creating \"Element\" object..." << endl;
-    #ENDIF
+    #endif
 }
 
-string Element::getName(){
+string Element::getKey(){
     return m_key;
 }
 
@@ -99,7 +119,7 @@ private:
 public:
     string getValue();
     void setValue(string);
-    void printToStream(ofstream);
+    void printToStream(ofstream&);
 };
 
 string Property::getValue(){
@@ -110,31 +130,30 @@ void Property::setValue(string val){
     m_value = val;
 }
 
-void Property::printToStream(ofstream outstream){
+void Property::printToStream(ofstream& outstream){
     indent(outstream, g_indentlevel);
-    outstream << "<" << getKey() << ">"
-              << getValue() << "</" << getKey() << ">" << endl;
+    outstream << "<" << getKey() << ">" << getValue() << "</" << getKey() << ">" << endl;
 }
 
 class Object : public Element{
 protected:
     vector<Element> m_elements;
     int m_count;
-    ObjectType m_type;
+    ElementType m_type;
 public:
-    Object(ObjectType = OBJECT);
+    Object(ElementType = OBJECT);
     Object& operator++();
     Object operator++(int);
     int getCount();
     vector<Element>& getElements();
-    void printToStream(ofstream);
+    void printToStream(ofstream&);
 };
 
-Object::Object(ObjectType t):
-m_elementcount(0), m_type(t) {
-    #IFDEF TEST
+Object::Object(ElementType t):
+m_count(0), m_type(t) {
+    #ifdef TEST
     cout << "Creating \"Object\" object..." << endl;
-    #ENDIF
+    #endif
 }
 
 Object& Object::operator++(){
@@ -148,11 +167,15 @@ Object Object::operator++(int){
     return temp;
 }
 
-vector<Element>& Object::GetElements(){
-    return (*m_elements);
+int Object::getCount(){
+    return m_count;
 }
 
-void Object::printToStream(ofstream outstream){
+vector<Element>& Object::getElements(){
+    return m_elements;
+}
+
+void Object::printToStream(ofstream& outstream){
     indent(outstream, g_indentlevel);
     outstream << "<" << this->getKey() << ">" << endl;
     g_indentlevel++;
@@ -170,11 +193,13 @@ int main()
     ofstream ofile;
     char chbuf;
 
-    if (!ifile.open("test_json.json", fstream::in)){
+    ifile.open("test_json.json", fstream::in);
+    if (!ifile.is_open()){
         cout << "[ERROR] Cannot open input file!" << endl;
         return 0;
     }
-    if (!ofile.open("out_xml.xml", fstream::out)){
+    ofile.open("out_xml.xml", fstream::out);
+    if (!ofile.is_open()){
         cout << "[ERROR] Cannot open output file!" << endl;
         return 0;
     }
@@ -187,7 +212,10 @@ int main()
 
     Object document;
     document.setKey(getNextKey(ifile));
-    getToNextValue();
+    getToNextValue(ifile);
+    getNextKey
+
+    cout << "Klucz glownego obiektu: " << document.getKey() << endl;
 
     return 0;
 }
