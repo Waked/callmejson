@@ -213,7 +213,7 @@ int main()
     Object document;
     document.setKey(getNextKey(ifile));
     getToNextValue(ifile);
-    getNextKey
+    //getNextKey
 
     cout << "Klucz glownego obiektu: " << document.getKey() << endl;
 
