@@ -1,5 +1,3 @@
-#include <iostream>
-#include <vector>
 /**
  *  Created by Kamil Dzierzanowski and
  *  published under GNU GPL v.3.0 license.
@@ -9,6 +7,8 @@
  *  refers to.
  **/
 
+#include <iostream>
+#include <vector>
 #include <string>
 #include <fstream>
 
@@ -64,6 +64,9 @@ string readWord(ifstream& instream){
     return tempstr;
 }
 
+///Reads the stream up to next parenthesis, then
+///extracts the word inside them. Returns closing
+///brace or bracket upon reaching one.
 string getNextKey(ifstream& instream){
     char tempc;
     string tempstr = "";
@@ -78,37 +81,51 @@ string getNextKey(ifstream& instream){
         return tempstr;
     return readWord(instream);
 }
-/*
-Object readObject(ifstream& instream) {
-    string tempkey = getNextKey(instream);
-    string tempval = "";
+
+///Reads contents of a JS object and pushes them to
+///passed object
+void readObject(ifstream& instream, Object& thisobj){
+    string tempkey;
     ElementType type;
-    Object* returnobj = new Object;
+    Element* objtopush;
+
+    tempkey = getNextKey(instream);
     while (tempkey != "}"){
         type = getToNextValue(instream);
         if (type == PROPERTY){
+            objtopush = new Property;
             tempval = readWord(instream);
             returnobj.setKey(tempkey);
             Property prop;
             prop
-            returnobj.getElements().push_back()
+        } else {
+            objtopush = new Object;
+            switch (type){
+            case OBJECT:
+                objtopush.
+            }
         }
+
+        thisobj.getElements().push_back()
         tempkey = getNextKey();
     }
-}*/
+}
 
 class Element{
 protected:
     string m_key;
+    int m_embedlevel;
 public:
     Element();
     string getKey();
+    int getEmbedLevel();
     void setKey(string);
+    void setEmbedLevel(int);
     virtual void printToStream(ofstream&) {}
 };
 
 Element::Element():
-m_key("") {
+m_key(""), m_embedlevel(0) {
     #ifdef TEST
     cout << "Creating \"Element\" object..." << endl;
     #endif
@@ -118,8 +135,16 @@ string Element::getKey(){
     return m_key;
 }
 
+int Element::getEmbedLevel(){
+    return m_embedlevel;
+}
+
 void Element::setKey(string name){
     m_key = name;
+}
+
+void Element::setEmbedLevel(int lvl){
+    m_embedlevel = lvl;
 }
 
 class Property : public Element{
@@ -151,9 +176,13 @@ protected:
     ElementType m_type;
 public:
     Object(ElementType = OBJECT);
-    Object& operator++();
-    Object operator++(int);
+    Object& operator++();   //Adds 1 to m_count
+    Object operator++(int); //-''-
+    void addCount();        //-''-
     int getCount();
+    void setCount(int);
+    void setType(ElementType);
+    ElementType getType();
     vector<Element>& getElements();
     void printToStream(ofstream&);
 };
@@ -178,6 +207,22 @@ Object Object::operator++(int){
 
 int Object::getCount(){
     return m_count;
+}
+
+void Object::setCount(int ct){
+    m_count = ct;
+}
+
+void Object::addCount(){
+    m_count++;
+}
+
+void Object::setType(ElementType targettype){
+    m_type = targettype;
+}
+
+ElementType Object::getType(){
+    return m_type;
 }
 
 vector<Element>& Object::getElements(){
@@ -207,6 +252,7 @@ int main()
         cout << "[ERROR] Cannot open input file!" << endl;
         return 0;
     }
+
     ofile.open("out_xml.xml", fstream::out);
     if (!ofile.is_open()){
         cout << "[ERROR] Cannot open output file!" << endl;
