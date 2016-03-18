@@ -1,5 +1,14 @@
 #include <iostream>
 #include <vector>
+/**
+ *  Created by Kamil Dzierzanowski and
+ *  published under GNU GPL v.3.0 license.
+ *
+ *  Claiming authorship to this project
+ *  is forbidden during the course it
+ *  refers to.
+ **/
+
 #include <string>
 #include <fstream>
 
