@@ -3,24 +3,21 @@
 #include "../include/Element.hpp"
 
 Element::Element():
-m_key(""), m_embedlevel(0) {
-    #ifdef TEST
-    cout << "Creating \"Element\" object..." << endl;
-    #endif
+m_key("") {
 }
 
 std::string Element::getKey(){
     return m_key;
 }
 
-int Element::getEmbedLevel(){
-    return m_embedlevel;
-}
-
 void Element::setKey(std::string name){
     m_key = name;
 }
 
-void Element::setEmbedLevel(int lvl){
-    m_embedlevel = lvl;
+void Element::setElemType(ElementType targettype){
+    m_type = targettype;
+}
+
+ElementType Element::getElemType(){
+    return m_type;
 }

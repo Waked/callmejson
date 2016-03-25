@@ -4,17 +4,23 @@
 #include <string>
 #include <fstream>
 
+enum ElementType {
+    PROPERTY,
+    OBJECT,
+    ARRAY
+};
+
 class Element{
 protected:
     std::string m_key;
-    int m_embedlevel;
+    ElementType m_type;
 public:
     Element();
+    virtual ~Element() {}
     std::string getKey();
-    int getEmbedLevel();
     void setKey(std::string);
-    void setEmbedLevel(int);
-    virtual void printToStream(std::ofstream&) {}
+    ElementType getElemType();
+    void setElemType(ElementType);
 };
 
 #endif

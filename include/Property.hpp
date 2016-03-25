@@ -11,7 +11,6 @@ private:
 public:
     std::string getValue();
     void setValue(std::string);
-    void printToStream(std::ofstream&);
 };
 
 #endif // PROPERTY_H

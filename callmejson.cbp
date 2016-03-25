@@ -22,7 +22,17 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/Element.hpp" />
+		<Unit filename="include/Object.hpp" />
+		<Unit filename="include/Property.hpp" />
+		<Unit filename="include/json_in.h" />
+		<Unit filename="include/json_out.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/Element.cpp" />
+		<Unit filename="src/Object.cpp" />
+		<Unit filename="src/Property.cpp" />
+		<Unit filename="src/json_in.cpp" />
+		<Unit filename="src/json_out.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
