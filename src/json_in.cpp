@@ -1,4 +1,3 @@
-#include <iostream>
 #include <fstream>
 #include "../include/Element.hpp"
 #include "../include/Object.hpp"
@@ -7,6 +6,10 @@
 
 using namespace std;
 
+/// ------------------------ ONCE AGAIN --------------------------
+
+///Reads characters up to next parenthesis and stores
+///them in a string variable, then returns the string
 string readWord(ifstream& instream){
     string tempstr = "";
     char tempc;
@@ -18,102 +21,18 @@ string readWord(ifstream& instream){
     return tempstr;
 }
 
-///Reads the stream up to next parenthesis, then
-///extracts the word inside them. Returns closing
-///brace or bracket upon reaching one.
+///Returns a string containing the next parenthesed
+///word in stream
 string readKey(ifstream& instream){
-    char tempc;
+    char tempchar = 0;
     string tempstr = "";
-    instream >> tempc;
-    while (!instream.eof() && tempc != '"' && tempc != '}' && tempc != ']')
-        instream >> tempc;
-    if (tempc == '}' || tempc == ']'){
-        if (!instream.eof())
-            tempstr += tempc;
-        return tempstr;
-    }
+    while (tempchar != '"')
+        instream >> tempchar;
     return readWord(instream);
 }
 
-ElementType nextValue(ifstream& stream){
-    char tempc;
-    stream >> tempc;
-    ElementType ret_val;
-    while (tempc != '"' && tempc != '{' && tempc != '[')
-        stream >> tempc;
-    switch (tempc) {
-    case '"':
-        ret_val = PROPERTY;
-        break;
-    case '{':
-        ret_val = OBJECT;
-        break;
-    case '[':
-        ret_val = ARRAY;
-        break;
-    }
-    return ret_val;
-}
-
-///Reads contents of a JS object and pushes them to
-///passed object
-void readObject(ifstream& instream, Object& thisobj){
-    string tempkey;
-    ElementType type;
-    Element* pushed_elem;
-    if (thisobj.getElemType() == ARRAY)
-        isarray = 1;
-
-    tempkey = nextKey(instream, isarray);
-    while ( tempkey != "}" && tempkey != "]" ){
-        if (!isarray)
-            type = nextValue(instream);
-        else {
-            if (tempkey == "\"")
-                type = PROPERTY;
-            if (tempkey == "{")
-                type = OBJECT;
-            if (tempkey == "[")
-                type = ARRAY;
-        }
-        if (type == PROPERTY){
-            pushed_elem = new Property;
-            if (!isarray)
-                pushed_elem->setKey(tempkey);
-            else
-                pushed_elem->setKey("");
-            dynamic_cast<Property*>(pushed_elem)->setValue(readWord(instream));
-        } else {
-            pushed_elem = new Object;
-            if (!isarray)
-                pushed_elem->setKey(tempkey);
-            else
-                pushed_elem->setKey("");
-            readObject(instream, *( dynamic_cast<Object*>(pushed_elem) ));
-        }
-        pushed_elem->setElemType(type);
-        cout << "Set " << pushed_elem->getKey() << " to type " << pushed_elem->getElemType() << endl;
-        thisobj.elements().push_back(*pushed_elem);
-        thisobj++;
-        tempkey = nextKey(instream, isarray);
-        delete pushed_elem;
-    }
-}
-
-///Loads JSON document from file input stream into
-///target root object of type Object, returns true
-///on succes and false on failure
-bool loadJSON(ifstream& input_stream, Object& target){
-    char tempchar;
-    input_stream >> tempchar;
-    if (tempchar != '{')
-        return false;
-    target.setKey(nextKey(input_stream));
-    target.setElemType(nextValue(input_stream));
-    readObject(input_stream, target);
-    return true;
-}
-
+///Reads through characters (mainly whitespaces and
+///doubledots) up to next character indicating a value
 void toNextValue(ifstream& instream){
     char tmpchar = '\0';
     while (tmpchar != '"' && tmpchar != '{' && tmpchar != '[')
@@ -121,6 +40,8 @@ void toNextValue(ifstream& instream){
     instream.putback(tmpchar);
 }
 
+///Returns the type of value that starts with
+///given character
 ElementType checkTypeOf(char ch){
     if (ch == '"')
         return PROPERTY;
@@ -130,25 +51,67 @@ ElementType checkTypeOf(char ch){
         return ARRAY;
 }
 
-Element readValue(ifstream& instream){
-    toNextValue(instream);
-    ElementType type = checkType(instream);
-    if (type == PROPERTY){
-        Property returnobject;
-        returnobject.setValue(readWord(instream));
-        return returnobject;
-    } else if (type == OBJECT){
-        Object returnobject;
-
+///Reads the stream through whitespaces and returns
+///whether it's the object-closing character or not
+bool isAtObjectEnd(ifstream& instream){
+    char tmpchar = ' ';
+    while (tmpchar == ' ')
+        instream >> tmpchar;
+    if (tmpchar == '}' || tmpchar == ']')
+        return true;
+    else {
+        instream.putback(tmpchar);
+        return false;
     }
 }
 
-///Returns a key-value pair as an Element
-Element& readKVPair(ifstream& instream){
-    Element* outputelement = new Element;
-    string keytoassign;
-    keytoassign = readKey();
-    *outputelement = readValue();
-    outputelement->setKey(keytoassign);
-    return *outputelement;
+///Checks next value-opening character and allocates
+///appropriate object in memory, populates the object
+///with data, then returns a pointer to the object
+Element* readValueFrom(ifstream& instream){
+    char openingchar;
+    ElementType valuetype;
+    Element* kvpair;
+    toNextValue(instream);
+    instream >> openingchar;
+    valuetype = checkTypeOf(openingchar);
+    if (valuetype == PROPERTY){
+        Property* returnobject = new Property;
+        returnobject->setElemType(valuetype);
+        returnobject->setValue(readWord(instream));
+        return returnobject;
+    } else {
+        Object* returnobject = new Object;
+        returnobject->setElemType(valuetype);
+        while (!isAtObjectEnd(instream)){
+            kvpair = readKVPair(instream, (valuetype == ARRAY));
+            returnobject->elements().push_back(*kvpair);
+            (*returnobject)++;
+            delete kvpair;
+        }
+        return returnobject;
+    }
+}
+
+///Returns an address to allocated Element with key and value
+Element* readKVPair(ifstream& instream, bool without_key){
+    Element* outputelement;
+    string key = "";
+    if (!without_key)
+        key = readKey(instream);
+    outputelement = readValueFrom(instream);
+    outputelement->setKey(key);
+    return outputelement;
+}
+
+///Loads JSON document from file input stream into
+///target root object of type Object, returns true
+///on succes and false on failure
+void loadJSON(ifstream& instream, Object& target){
+    char tempchar;
+    Element* mainkvpair;
+    instream >> tempchar;
+    mainkvpair = readKVPair(instream, 0);
+    target = *(dynamic_cast<Object*>(mainkvpair));
+    delete mainkvpair;
 }

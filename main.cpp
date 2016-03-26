@@ -11,6 +11,8 @@
 #include <string>
 #include <fstream>
 
+#define TEST
+
 #include "include/Element.hpp"
 #include "include/Object.hpp"
 #include "include/Property.hpp"
@@ -35,8 +37,8 @@ int main()
     }
 
     Object document;
-    cout << loadJSON(ifile, document) << endl;
-    printElement(ofile, document, 0);
+    loadJSON(ifile, document);
+    cout << "Successfully loaded a JSON document into \"document\" object" << endl;
 
     ifile.close();
     ofile.close();
