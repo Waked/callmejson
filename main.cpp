@@ -17,7 +17,7 @@
 #include "include/Object.hpp"
 #include "include/Property.hpp"
 #include "include/json_in.h"
-#include "include/json_out.h"
+#include "include/xml_out.h"
 
 using namespace std;
 
@@ -39,6 +39,8 @@ int main()
     Object document;
     loadJSON(ifile, document);
     cout << "Successfully loaded a JSON document into \"document\" object" << endl;
+    printXML(ofile, document);
+    cout << "Successfully stored \"document\" in output file" << endl;
 
     ifile.close();
     ofile.close();
