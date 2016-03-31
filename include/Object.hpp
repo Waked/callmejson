@@ -15,7 +15,8 @@ public:
     Object operator++(int); //-''-
     int getCount();
     void setCount(int);
-    std::vector<Element>& elements();
+    Element& getElement(int);
+    void addElement(Element);
 };
 
 #endif // OBJECT_H

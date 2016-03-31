@@ -1,4 +1,5 @@
 #include <fstream>
+#include <typeinfo>
 #include "../include/xml_out.h"
 #include "../include/Element.hpp"
 #include "../include/Property.hpp"
@@ -24,10 +25,12 @@ void indent(ofstream& outstream, int level){
 ///Prints a markup tag to given stream containing given name,
 ///last parameter defines whether it's an opening or closing tag
 void tag(ofstream& outstream, string name, bool openclose){
-    outstream << "<";
+    string outputstr = "<";
     if (openclose)
-        outstream << "/";
-    outstream << name << ">";
+        outputstr += "/";
+    outputstr += name;
+    outputstr += ">";
+    outstream << outputstr;
 }
 
 ///Returns a newly allocated Element of the same
@@ -62,25 +65,26 @@ Element* cloneElement(Element& source) {
 ///Prints an opening tag with $target's key name, then outputs
 ///$target's content, then prints a corresponding closing tag
 void printElement(ofstream& outstream, Element& target){
-    cout << "Got an element of type " << target.getElemType() << " and key: " << target.getKey() << endl;
     static int indentlevel = 0;
     ElementType type = target.getElemType();
+    cout << "Type name: " << typeid(target).name() << endl;
     if (type == PROPERTY){
         indent(outstream, indentlevel);
         tag(outstream, target.getKey(), OPENING);
-        Property& temp = dynamic_cast<Property&>(target);
+        Property temp = dynamic_cast<Property&>(target);
         cout << "Fine here" << endl;
         outstream << temp.getValue();
         tag(outstream, target.getKey(), CLOSING);
         outstream << "\n";
     } else if (type == OBJECT){
-        Object& temp = dynamic_cast<Object&>(target);
+        Object temp = dynamic_cast<Object&>(target);
         indent(outstream, indentlevel);
         tag(outstream, target.getKey(), OPENING);
         indentlevel += 1;
         for (int i = 0; i < temp.getCount(); i++){
+            Element temp2 = temp.getElement(i);
             outstream << "\n";
-            printElement(outstream, temp.elements()[i]);
+            printElement(outstream, temp2);
         }
         indentlevel -= 1;
         outstream << "\n";
@@ -88,9 +92,9 @@ void printElement(ofstream& outstream, Element& target){
         tag(outstream, target.getKey(), CLOSING);
         outstream << "\n";
     } else if (type == ARRAY) {
-        Object& temp = dynamic_cast<Object&>(target);
+        Object temp = dynamic_cast<Object&>(target);
         for (int i = 0; i < temp.getCount(); i++){
-            Element* clone = cloneElement(temp.elements()[i]);
+            Element* clone = cloneElement(temp.getElement(i));
             clone->setKey(temp.getKey());
             printElement(outstream, *clone);
             delete clone;

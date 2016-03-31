@@ -26,6 +26,10 @@ void Object::setCount(int ct){
     m_count = ct;
 }
 
-std::vector<Element>& Object::elements(){
-    return m_elements;
+Element& Object::getElement(int n){
+    return m_elements.at(n);
+}
+
+void Object::addElement(Element target){
+    m_elements.push_back(target);
 }

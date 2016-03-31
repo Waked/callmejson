@@ -85,7 +85,7 @@ Element* readValueFrom(ifstream& instream){
         returnobject->setElemType(valuetype);
         while (!isAtObjectEnd(instream)){
             kvpair = readKVPair(instream, (valuetype == ARRAY));
-            returnobject->elements().push_back(*kvpair);
+            returnobject->addElement(*kvpair);
             (*returnobject)++;
             delete kvpair;
         }

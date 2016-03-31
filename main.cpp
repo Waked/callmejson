@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <typeinfo>
 
 #define TEST
 
@@ -39,6 +40,14 @@ int main()
     Object document;
     loadJSON(ifile, document);
     cout << "Successfully loaded a JSON document into \"document\" object" << endl;
+
+    Element& elemref = document;
+    cout << "Type of elemref: " << typeid(elemref).name() << endl;
+
+    for (int i = 0; i < document.getCount(); i++){
+        cout << "Type of \"document\"'s " << i << "th child is: " << typeid(document.getElement(i)).name() << endl;
+    }
+
     printXML(ofile, document);
     cout << "Successfully stored \"document\" in output file" << endl;
 
