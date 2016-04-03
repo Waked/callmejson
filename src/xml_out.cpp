@@ -79,12 +79,11 @@ void printElement(ofstream& outstream, Element& target){
     } else if (type == OBJECT){
         Object temp = dynamic_cast<Object&>(target);
         indent(outstream, indentlevel);
-        tag(outstream, target.getKey(), OPENING);
+        tag(outstream, temp.getKey(), OPENING);
         indentlevel += 1;
         for (int i = 0; i < temp.getCount(); i++){
-            Element temp2 = temp.getElement(i);
             outstream << "\n";
-            printElement(outstream, temp2);
+            printElement(outstream, temp.getElement(i));
         }
         indentlevel -= 1;
         outstream << "\n";

@@ -27,9 +27,9 @@ void Object::setCount(int ct){
 }
 
 Element& Object::getElement(int n){
-    return m_elements.at(n);
+    return *(m_elements.at(n));
 }
 
-void Object::addElement(Element target){
+void Object::addElement(Element* target){
     m_elements.push_back(target);
 }

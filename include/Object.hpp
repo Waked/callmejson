@@ -7,7 +7,7 @@
 
 class Object : public Element{
 protected:
-    std::vector<Element> m_elements;
+    std::vector<Element*> m_elements;
     int m_count;
 public:
     Object();
@@ -16,7 +16,7 @@ public:
     int getCount();
     void setCount(int);
     Element& getElement(int);
-    void addElement(Element);
+    void addElement(Element*);
 };
 
 #endif // OBJECT_H
