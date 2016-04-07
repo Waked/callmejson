@@ -89,9 +89,8 @@ void printElement(ofstream& outstream, Element& target){
         outstream << "\n";
         indent(outstream, indentlevel);
         tag(outstream, target.getKey(), CLOSING);
-        outstream << "\n";
     } else if (type == ARRAY) {
-        Object temp = dynamic_cast<Object&>(target);
+        Object& temp = dynamic_cast<Object&>(target);
         for (int i = 0; i < temp.getCount(); i++){
             Element* clone = cloneElement(temp.getElement(i));
             clone->setKey(temp.getKey());

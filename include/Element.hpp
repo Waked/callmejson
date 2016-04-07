@@ -21,6 +21,7 @@ public:
     void setKey(std::string);
     ElementType getElemType();
     void setElemType(ElementType);
+    Element* newLikeThis();
 };
 
 #endif
