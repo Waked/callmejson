@@ -11,6 +11,7 @@ protected:
     int m_count;
 public:
     Object();
+    Object(ElementType t);
     Object(Object&);
     ~Object();
     Object& operator++();   //Adds 1 to m_count

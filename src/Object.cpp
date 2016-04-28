@@ -3,12 +3,21 @@
 
 #include "../include/Object.hpp"
 
-Object::Object() :
-m_count(0) {
+using namespace std;
+
+Object::Object(){
+    m_type = OBJECT;
+    m_count = 0;
+}
+
+Object::Object(ElementType t){
+    m_type = t;
+    m_count = 0;
 }
 
 Object::Object(Object& rhs){
     this->m_count = rhs.getCount();
+    this->m_type = rhs.getElemType();
     for (int i = 0; i < this->m_count; i++){
         Element* topush;
         topush = rhs.getElement(i).newLikeThis();
@@ -18,7 +27,9 @@ Object::Object(Object& rhs){
 }
 
 Object::~Object(){
-
+    for (vector<Element*>::iterator it = m_elements.begin(); it != m_elements.end(); it++){
+        delete *it;
+    }
 }
 
 Object& Object::operator++(){
@@ -46,4 +57,5 @@ Element& Object::getElement(int n){
 
 void Object::addElement(Element* target){
     m_elements.push_back(target);
+    m_count++;
 }

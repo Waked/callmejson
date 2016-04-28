@@ -26,7 +26,7 @@ int main()
 {
     ifstream ifile;
     ofstream ofile;
-    ifile.open("test_json.json", fstream::in);
+    ifile.open("test_json2.json", fstream::in);
     if (!ifile.is_open()){
         cout << "[ERROR] Cannot open input file!" << endl;
         return 0;
@@ -37,11 +37,11 @@ int main()
         return 0;
     }
 
-    Object document;
-    loadJSON(ifile, document);
+    Object* document;
+    document = readJSON(ifile);
     cout << "Successfully loaded a JSON document into \"document\" object" << endl;
 
-    printXML(ofile, document);
+    saveXML(ofile, *document);
     cout << "Successfully stored \"document\" in output file" << endl;
 
     ifile.close();

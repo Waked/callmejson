@@ -9,6 +9,7 @@ class Property : public Element{
 private:
     std::string m_value;
 public:
+    Property();
     std::string getValue();
     void setValue(std::string);
 };
