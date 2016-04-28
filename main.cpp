@@ -18,20 +18,39 @@
 #include "include/Object.hpp"
 #include "include/Property.hpp"
 #include "include/json_in.h"
+#include "include/json_out.h"
 #include "include/xml_out.h"
 
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
     ifstream ifile;
     ofstream ofile;
-    ifile.open("test_json2.json", fstream::in);
+
+    string path_in, path_out;
+
+    if (argc < 2){
+        cout << "Sourcefile path (relative): ";
+        cin >> path_in;
+    } else {
+        path_in = argv[1];
+    }
+
+    ifile.open(path_in, fstream::in);
     if (!ifile.is_open()){
         cout << "[ERROR] Cannot open input file!" << endl;
         return 0;
     }
-    ofile.open("out_xml.xml", fstream::out);
+
+    if (argc < 3){
+        cout << "Output path (relative): ";
+        cin >> path_out;
+    } else {
+        path_out = argv[2];
+    }
+
+    ofile.open(path_out, fstream::out);
     if (!ofile.is_open()){
         cout << "[ERROR] Cannot open output file!" << endl;
         return 0;
@@ -41,7 +60,7 @@ int main()
     document = readJSON(ifile);
     cout << "Successfully loaded a JSON document into \"document\" object" << endl;
 
-    saveXML(ofile, *document);
+    saveJSON(ofile, *document);
     cout << "Successfully stored \"document\" in output file" << endl;
 
     ifile.close();
