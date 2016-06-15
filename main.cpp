@@ -35,10 +35,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam){
             char inpath[256], outpath[256];
             GetWindowText(hText_InputPath, inpath, 256);
             GetWindowText(hText_OutputPath, outpath, 256);
-            int index = SendMessage((HWND) lParam, WM_SETTEXT, (WPARAM) 0, (LPARAM) 0);
+            int index = SendMessage((HWND) lParam, CB_SETCURSEL, (WPARAM) 0, (LPARAM) 0);
             silnik.getconvtype(index);
-            silnik.readfile(string(inpath));
-            silnik.writefile(string(outpath));
+            if (silnik.readfile(string(inpath)))
+                silnik.writefile(string(outpath));
         }
         break;
     default:
@@ -93,8 +93,8 @@ bool CreateAndShowMainWindow(HINSTANCE hInstance, int nCmdShow){
     hText_OutputPath = CreateWindowEx( WS_EX_CLIENTEDGE, "EDIT", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, 10, 160, 320, 22, hwnd, NULL, hInstance, NULL );
     SendMessage( hText_OutputPath, WM_SETFONT,( WPARAM ) hNormalFont, 0 );
 
-    shLabel_Fourth = CreateWindowEx(WS_EX_STATICEDGE, "static", "SHLABEL_FOURTH", WS_CHILD | WS_VISIBLE | SS_CENTER, 10, 190, 340, 20, hwnd, NULL, hInstance, NULL);
-    SetWindowText(shLabel_First, "");
+    shLabel_Fourth = CreateWindowEx(WS_EX_STATICEDGE, "static", "SHLABEL_FOURTH", WS_CHILD | WS_VISIBLE | SS_CENTER, 10, 190, 330, 20, hwnd, NULL, hInstance, NULL);
+    SetWindowText(shLabel_Fourth, "");
     SendMessage( shLabel_Fourth, WM_SETFONT,( WPARAM ) hNormalFont, 0 );
 
     hButton_Convert = CreateWindowEx( 0, "BUTTON", "Generuj", WS_CHILD | WS_VISIBLE, 100, 220, 150, 30, hwnd, NULL, hInstance, NULL );
