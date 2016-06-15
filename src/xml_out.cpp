@@ -11,9 +11,6 @@
 
 using namespace std;
 
-///---------------------- SECOND ATTEMPT ----------------------------
-
-/// DONE
 void printProperty(ofstream& outputstr, Property& target_prop, int level){
     for (int i = 0; i < level; i++)
         outputstr << TAB;
@@ -24,7 +21,6 @@ void printProperty(ofstream& outputstr, Property& target_prop, int level){
     outputstr << "</" << target_prop.getKey() << ">" << endl;
 }
 
-/// DONE
 void printObject(ofstream& outputstr, Object& target_obj, int level){
     for (int i = 0; i < level; i++)
         outputstr << TAB;
@@ -57,7 +53,6 @@ void printObject(ofstream& outputstr, Object& target_obj, int level){
     outputstr << "</" << target_obj.getKey() << ">" << endl;
 }
 
-/// DONE
 void printArray(ofstream& outputstr, Object& target_arr, int level){
     ElementType type;
     for (int i = 0; i < target_arr.getCount(); i++){

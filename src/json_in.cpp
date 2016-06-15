@@ -8,8 +8,6 @@
 
 using namespace std;
 
-/// ------------------------ ONCE FUCKING AGAIN --------------------------
-
 string readCustom(ifstream& inputstr, string delim){
     int delim_count = delim.length();
     string returnstr;
@@ -27,7 +25,6 @@ string readCustom(ifstream& inputstr, string delim){
     return returnstr;
 }
 
-///
 Object* readBracket(ifstream& inputstr){
     Object* returnobj = new Object(OBJECT);
     Element* pushelem;
@@ -87,7 +84,6 @@ Object* readBracket(ifstream& inputstr){
     return returnobj;
 }
 
-/// DONE
 Object* readSquares(ifstream& inputstr){
     Object* returnobj = new Object(ARRAY);
     Element* pushelem;
